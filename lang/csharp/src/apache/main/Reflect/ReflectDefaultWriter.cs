@@ -75,7 +75,13 @@ namespace Avro.Reflect
             {
                 try
                 {
-                    var v = _classCache.GetClass(schema).GetValue(value, field);
+                    var c = _classCache.GetClass(schema);
+                    if (c == null)
+                    {
+                        throw new Exception($"Class is not registered for schema {schema.Fullname}");
+                    }
+
+                    var v = c.GetValue(value, field);
 
                     Write(field.Schema, v, encoder);
                 }
