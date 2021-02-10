@@ -214,41 +214,51 @@ namespace Avro.Reflect
                     return (bool)defaultValue;
 
                 case Schema.Type.Int:
-                    if (defaultValue.Type != JTokenType.Integer)
+                    switch (defaultValue.Type)
                     {
-                        throw new AvroException("Default int value " + defaultValue.ToString() + " is invalid, expected is json integer.");
+                        case JTokenType.Float:
+                        case JTokenType.Integer:
+                            return (int)defaultValue;
+                        case JTokenType.String:
+                            return int.Parse((string)defaultValue);
+                        default:
+                            throw new AvroException("Default int value " + defaultValue.ToString() + " is invalid, expected is json integer.");
                     }
-
-                    return Convert.ToInt32((int)defaultValue);
 
                 case Schema.Type.Long:
-                    if (defaultValue.Type != JTokenType.Integer)
+                    switch (defaultValue.Type)
                     {
-                        throw new AvroException("Default long value " + defaultValue.ToString() + " is invalid, expected is json integer.");
+                        case JTokenType.Float:
+                        case JTokenType.Integer:
+                            return (long)defaultValue;
+                        case JTokenType.String:
+                            return long.Parse((string)defaultValue);
+                        default:
+                            throw new AvroException("Default long value " + defaultValue.ToString() + " is invalid, expected is json integer.");
                     }
-
-                    return Convert.ToInt64((long)defaultValue);
 
                 case Schema.Type.Float:
-                    if (defaultValue.Type != JTokenType.Float)
+                    switch (defaultValue.Type)
                     {
-                        throw new AvroException("Default float value " + defaultValue.ToString() + " is invalid, expected is json number.");
+                        case JTokenType.Float:
+                        case JTokenType.Integer:
+                            return (float)defaultValue;
+                        case JTokenType.String:
+                            return float.Parse((string)defaultValue);
+                        default:
+                            throw new AvroException("Default float value " + defaultValue.ToString() + " is invalid, expected is json number.");
                     }
-
-                    return (float)defaultValue;
 
                 case Schema.Type.Double:
-                    if (defaultValue.Type == JTokenType.Integer)
+                    switch (defaultValue.Type)
                     {
-                        return Convert.ToDouble((int)defaultValue);
-                    }
-                    else if (defaultValue.Type == JTokenType.Float)
-                    {
-                        return Convert.ToDouble((float)defaultValue);
-                    }
-                    else
-                    {
-                        throw new AvroException("Default double value " + defaultValue.ToString() + " is invalid, expected is json number.");
+                        case JTokenType.Float:
+                        case JTokenType.Integer:
+                            return (double)defaultValue;
+                        case JTokenType.String:
+                            return double.Parse((string)defaultValue);
+                        default:
+                            throw new AvroException("Default double value " + defaultValue.ToString() + " is invalid, expected is json number.");
                     }
 
                 case Schema.Type.Bytes:
