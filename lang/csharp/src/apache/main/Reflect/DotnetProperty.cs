@@ -83,21 +83,7 @@ namespace Avro.Reflect
         {
             _property = property;
 
-            if (_property.PropertyType == typeof(DateTime?))
-            {
-                var x = 1;
-            }
-
-            Converter = converter;
-
-            if (Converter == null)
-            {
-                var c = cache.GetDefaultConverter(schema, _property.PropertyType);
-                if (c != null)
-                {
-                    Converter = c;
-                }
-            }
+            Converter = converter ?? cache.GetDefaultConverter(schema, _property.PropertyType);
 
             if (!IsPropertyCompatible(schema))
             {

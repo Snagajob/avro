@@ -122,7 +122,7 @@ namespace Avro.Reflect
 
             if (schema.Tag == Avro.Schema.Type.Union)
             {
-                var us = schema as UnionSchema;
+                var us = (UnionSchema)schema;
 
                 if (us.Count == 2)
                 {
