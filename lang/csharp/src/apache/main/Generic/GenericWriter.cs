@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 using System;
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using Avro.IO;
 
@@ -288,20 +290,20 @@ namespace Avro.Generic
         /// <param name="value"></param>
         protected virtual void EnsureArrayObject(object value)
         {
-            if (value == null || !(value is Array)) throw TypeMismatch(value, "array", "Array");
+            if (value == null || !(value is IList)) throw TypeMismatch(value, "array", "Array");
         }
 
         /// <summary>
         /// Returns the length of an array. The default implementation requires the object
-        /// to be an array of objects and returns its length. The defaul implementation
-        /// gurantees that EnsureArrayObject() has been called on the value before this
+        /// to be an array of objects and returns its length. The default implementation
+        /// guarantees that EnsureArrayObject() has been called on the value before this
         /// function is called.
         /// </summary>
         /// <param name="value">The object whose array length is required</param>
         /// <returns>The array length of the given object</returns>
         protected virtual long GetArrayLength(object value)
         {
-            return (value as Array).Length;
+            return ((IList)value).Count;
         }
 
         /// <summary>
@@ -315,7 +317,7 @@ namespace Avro.Generic
         /// <returns>The array element at the index</returns>
         protected virtual object GetArrayElement(object value, long index)
         {
-            return (value as Array).GetValue(index);
+            return ((IList)value)[(int)index];
         }
 
         /// <summary>
@@ -445,7 +447,7 @@ namespace Avro.Generic
         /// <returns>A new <see cref="AvroException"/> indicating a type mismatch.</returns>
         protected AvroException TypeMismatch(object obj, string schemaType, string type)
         {
-            return new AvroException(type + " required to write against " + schemaType + " schema but found " + (null == obj ? "null" : obj.GetType().ToString()) );
+            return new AvroException(type + " required to write against " + schemaType + " schema but found " + (null == obj ? "null" : obj.GetType().ToString()));
         }
 
         private void Error(Schema schema, Object value)
@@ -493,7 +495,7 @@ namespace Avro.Generic
                     //return obj is GenericEnum && (obj as GenericEnum).Schema.Equals(s);
                     return obj is GenericEnum && (obj as GenericEnum).Schema.SchemaName.Equals((sc as EnumSchema).SchemaName);
                 case Schema.Type.Array:
-                    return obj is Array && !(obj is byte[]);
+                    return obj is IList && !(obj is byte[]);
                 case Schema.Type.Map:
                     return obj is IDictionary<string, object>;
                 case Schema.Type.Union:
