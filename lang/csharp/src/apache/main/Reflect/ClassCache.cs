@@ -293,9 +293,13 @@ namespace Avro.Reflect
                         (us.Schemas[0].Tag == Schema.Type.Null || us.Schemas[1].Tag == Schema.Type.Null) &&
                         (objType.IsClass
                          || (objType.IsGenericType
-                             && (objType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                                || objType.GetGenericTypeDefinition() == typeof(IList<>)))
-                         )
+                             && (
+                                 objType.GetGenericTypeDefinition() == typeof(Nullable<>)
+                                   || objType.GetGenericTypeDefinition() == typeof(IList<>)
+                                )
+                            )
+                        )
+                       )
                     {
                         // in this case objType will match the non null type in the union
                         foreach (var o in us.Schemas)
