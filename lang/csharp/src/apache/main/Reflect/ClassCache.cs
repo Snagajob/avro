@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Avro.Reflect
 {
@@ -290,7 +291,11 @@ namespace Avro.Reflect
                 case UnionSchema us:
                     if (us.Schemas.Count == 2 &&
                         (us.Schemas[0].Tag == Schema.Type.Null || us.Schemas[1].Tag == Schema.Type.Null) &&
-                        (objType.IsClass || (objType.IsGenericType && objType.GetGenericTypeDefinition() == typeof(Nullable<>))))
+                        (objType.IsClass
+                         || (objType.IsGenericType
+                             && (objType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                                || objType.GetGenericTypeDefinition() == typeof(IList<>)))
+                         )
                     {
                         // in this case objType will match the non null type in the union
                         foreach (var o in us.Schemas)
