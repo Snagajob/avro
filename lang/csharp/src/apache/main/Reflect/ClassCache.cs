@@ -29,13 +29,13 @@ namespace Avro.Reflect
     /// </summary>
     public class ClassCache
     {
-        private static ConcurrentBag<IAvroFieldConverter> _defaultConverters = new ConcurrentBag<IAvroFieldConverter>();
+        private static readonly ConcurrentBag<IAvroFieldConverter> _defaultConverters = new ConcurrentBag<IAvroFieldConverter>();
 
-        private static ConcurrentDictionary<Tuple<Type, Type, bool>, IAvroFieldConverter> _typeDefaultConverters = new ConcurrentDictionary<Tuple<Type, Type, bool>, IAvroFieldConverter>();
+        private static readonly ConcurrentDictionary<Tuple<Type, Type, bool>, IAvroFieldConverter> _typeDefaultConverters = new ConcurrentDictionary<Tuple<Type, Type, bool>, IAvroFieldConverter>();
 
-        private ConcurrentDictionary<string, DotnetClass> _nameClassMap = new ConcurrentDictionary<string, DotnetClass>();
+        private readonly ConcurrentDictionary<RecordSchema, DotnetClass> _nameClassMap = new ConcurrentDictionary<RecordSchema, DotnetClass>();
 
-        private ConcurrentDictionary<string, Type> _nameArrayMap = new ConcurrentDictionary<string, Type>();
+        private readonly ConcurrentDictionary<string, Type> _nameArrayMap = new ConcurrentDictionary<string, Type>();
 
         private void AddClassNameMapItem(RecordSchema schema, Type dotnetClass)
         {
@@ -49,7 +49,7 @@ namespace Avro.Reflect
                 throw new AvroException($"Type {dotnetClass.Name} is not a class");
             }
 
-            _nameClassMap.TryAdd(schema.Fullname, new DotnetClass(dotnetClass, schema, this));
+            _nameClassMap.TryAdd(schema, new DotnetClass(dotnetClass, schema, this));
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace Avro.Reflect
         public DotnetClass GetClass(RecordSchema schema)
         {
             DotnetClass c;
-            if (!_nameClassMap.TryGetValue(schema.Fullname, out c))
+            if (!_nameClassMap.TryGetValue(schema, out c))
             {
                return null;
             }
