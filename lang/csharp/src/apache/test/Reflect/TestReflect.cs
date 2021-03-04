@@ -28,6 +28,24 @@ namespace Avro.Test
     class TestReflect
     {
 
+        [Test]
+        public void TestSameSchemaTwoTypes()
+        {
+            RecordSchema schema = (RecordSchema)Schema.Parse(@"
+                {
+                    ""type"":""record"",""name"":""SimpleRecord"", ""namespace"":""Avro.Test"", ""fields"":
+                       [
+                            {""name"":""A"",""type"": ""string"" }
+                       ]
+                }");
+
+            var classCache = new ClassCache();
+
+            classCache.LoadClassCache(typeof(SimpleRecord), schema);
+            Assert.Throws<AvroException>(() => classCache.LoadClassCache(typeof(SimpleRecordNew), schema));
+            classCache.LoadClassCache(typeof(SimpleRecord), schema);
+        }
+
         class SimpleRecord
         {
             public string A { get; set; }

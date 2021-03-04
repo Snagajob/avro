@@ -39,8 +39,14 @@ namespace Avro.Reflect
 
         private void AddClassNameMapItem(RecordSchema schema, Type dotnetClass)
         {
-            if (schema != null && GetClass(schema) != null)
+            var existingDotNetClass = GetClass(schema);
+            if (existingDotNetClass != null)
             {
+                if (existingDotNetClass.GetClassType() != dotnetClass)
+                {
+                    throw new AvroException($"Cannot cache more than one type per schema. Type {dotnetClass} has the same schema as {existingDotNetClass.GetClassType()}.");
+                }
+
                 return;
             }
 
@@ -49,7 +55,10 @@ namespace Avro.Reflect
                 throw new AvroException($"Type {dotnetClass.Name} is not a class");
             }
 
-            _nameClassMap.TryAdd(schema, new DotnetClass(dotnetClass, schema, this));
+            if (!_nameClassMap.TryAdd(schema, new DotnetClass(dotnetClass, schema, this)))
+            {
+                throw new AvroException($"Type {dotnetClass.Name} unable to add schema to class cache");
+            }
         }
 
         /// <summary>
