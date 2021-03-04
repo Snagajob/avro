@@ -75,14 +75,20 @@ namespace Avro.Reflect
             {
                 try
                 {
-                    var v = _classCache.GetClass(schema).GetValue(value, field);
+                    var dotnetClass = _classCache.GetClass(schema);
+                    if (dotnetClass == null)
+                    {
+                        throw new AvroException("Unable to locate class map for schema");
+                    }
+
+                    var v = dotnetClass.GetValue(value, field);
 
                     Write(field.Schema, v, encoder);
                 }
                 catch (Exception ex)
                 {
                     throw new AvroException(ex.Message + " in field " + field.Name, ex);
-                }
+                 }
             }
         }
 
